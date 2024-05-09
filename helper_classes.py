@@ -9,8 +9,7 @@ def normalize(vector):
 # This function gets a vector and the normal of the surface it hit
 # This function returns the vector that reflects from the surface
 def reflected(vector, axis):
-    # TODO:
-    # v = np.array([0,0,0])
+    # done by us
     axis = normalize(axis)
     return vector - 2 * np.dot(vector, axis) * axis
 
@@ -24,22 +23,22 @@ class DirectionalLight(LightSource):
 
     def __init__(self, intensity, direction):
         super().__init__(intensity)
-        # TODO
+        # done by us
         self.direction = normalize(np.array(direction))
 
     # This function returns the ray that goes from the light source to a point
     def get_light_ray(self,intersection_point):
-        # TODO
+        # done by us
         return Ray(intersection_point, -self.direction)
 
     # This function returns the distance from a point to the light source
     def get_distance_from_light(self, intersection):
-        #TODO
+        # done by us
         return np.inf # Distance is considered infinite for directional light
 
     # This function returns the light intensity at a point
     def get_intensity(self, intersection):
-        #TODO
+        # done by us
         return self.intensity # Intensity is the same for all points in the scene in directional light 
 
 
@@ -77,12 +76,11 @@ class SpotLight(LightSource):
 
     # This function returns the ray that goes from the light source to a point
     def get_light_ray(self, intersection):
-        #TODO
+        # done by us
         return Ray(intersection, normalize(self.position - intersection))
 
-
     def get_distance_from_light(self, intersection):
-        #TODO
+        # done by us
         return np.linalg.norm(self.position - intersection)
 
     def get_intensity(self, intersection):
@@ -93,7 +91,7 @@ class SpotLight(LightSource):
 class Ray:
     def __init__(self, origin, direction):
         self.origin = origin
-        self.direction = direction
+        self.direction = direction 
 
     # The function is getting the collection of objects in the scene and looks for the one with minimum distance.
     # The function should return the nearest object and its distance (in two different arguments)
@@ -193,7 +191,7 @@ A /&&&&&&&&&&&&&&&&&&&&\ B &&&/ C
     Similar to Traingle, every from face of the diamond's faces are:
         A -> B -> D
         B -> C -> D
-        A -> C -> B
+        A -> C -> D
         E -> B -> A
         E -> C -> B
         C -> E -> A
@@ -211,16 +209,32 @@ A /&&&&&&&&&&&&&&&&&&&&\ B &&&/ C
                  [4,1,0],
                  [4,2,1],
                  [2,4,0]]
-        # TODO
+        for idx in t_idx:
+            triangle = Triangle.__init__(idx)
+            l.append(triangle)
         return l
 
     def apply_materials_to_triangles(self):
         # TODO
-        pass
+        for triangle in self.triangle_list:
+            triangle.set_material(self.ambient, self.defuse, self.specular, self.shininess, self.reflection)
 
     def intersect(self, ray: Ray):
         # TODO
-        pass
+        minimal_t = np.inf
+        nearest_triangle = None
+
+        for triangle in self.triangle_list:
+            if triangle.intersect(ray) is not None:
+                t, current_triangle = triangle.intersect(ray)
+
+                if t < minimal_t:
+                    nearest_triangle = current_triangle
+                    minimal_t = t
+        if not nearest_triangle:
+            return None
+        return minimal_t, nearest_triangle
+
 
 class Sphere(Object3D):
     def __init__(self, center, radius: float):
@@ -229,5 +243,28 @@ class Sphere(Object3D):
 
     def intersect(self, ray: Ray):
         #TODO
-        pass
+        A_coefficient = np.dot(ray.direction)
+        center_to_origin_vector = ray.origin - self.center
+        B_coefficient = 2 * np.dot(ray.direction, center_to_origin_vector)
+        C_coefficient = np.dot(center_to_origin_vector) - self.radius**2
+
+        t = quadratic_formula(self, A_coefficient, B_coefficient, C_coefficient)
+        if t is not None:
+            return t, self
+        else:
+            return None
+
+            
+def quadratic_formula(A, B, C):
+        discriminant = np.sqrt(B**2 - 4*A*C)
+        if discriminant > 0:
+            t1 = (-1*B + discriminant) / 2*A
+            t2 = (-1*B - discriminant) / 2*A
+            if t1 < 0 and t2 < 0:
+                return None
+            else:
+                t = np.min(t1, t2)
+                return t
+        else:
+            return None
 
