@@ -163,11 +163,14 @@ class Triangle(Object3D):
             triangle_area = np.linalg.norm(np.cross(edge_ba,edge_ca)) /2
             alpha = np.linalg.norm(np.cross((self.b - P), (self.c - P))/ 2 * triangle_area)
             beta = np.linalg.norm(np.cross((self.b - P), (self.c - P))/ 2 * triangle_area)
-            gamma = 1 - alpha - beta\
-            if 0 <= alpha <= 1 and 0 <= beta <= 1 and 0 <= gamma <= 1:
-
+            gamma = 1 - alpha - beta
+            if (0 <= alpha <= 1) and (0 <= beta <= 1) and (0 <= gamma <= 1) and (alpha + beta + gamma == 1):
+                return (t, self)
+            else:
+                return None
         else:
             return None
+        
 
 class Pyramid(Object3D):
     """     
