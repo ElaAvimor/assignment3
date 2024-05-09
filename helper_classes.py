@@ -67,7 +67,7 @@ class PointLight(LightSource):
 class SpotLight(LightSource):
     def __init__(self, intensity, position, direction, kc, kl, kq):
         super().__init__(intensity)
-        # TODO
+        # done by us
         self.position = np.array(position)
         self.direction = normalize(np.array(direction))
         self.kc = kc
@@ -145,13 +145,13 @@ class Triangle(Object3D):
 
     # computes normal to the trainagle surface. Pay attention to its direction!
     def compute_normal(self):
-        # TODO
+        # done by us
         edge_ba = self.b - self.a
         edge_ca = self.c - self.a
         return normalize(np.cross(edge_ba, edge_ca))
 
     def intersect(self, ray: Ray):
-        # TODO
+        # done by us
         intPlane = self.plane.intersect(ray)
         if intPlane is not None:
             t, plane = intPlane
@@ -215,12 +215,12 @@ A /&&&&&&&&&&&&&&&&&&&&\ B &&&/ C
         return l
 
     def apply_materials_to_triangles(self):
-        # TODO
+        # done by us
         for triangle in self.triangle_list:
             triangle.set_material(self.ambient, self.defuse, self.specular, self.shininess, self.reflection)
 
     def intersect(self, ray: Ray):
-        # TODO
+        # done by us
         minimal_t = np.inf
         nearest_triangle = None
 
@@ -242,7 +242,7 @@ class Sphere(Object3D):
         self.radius = radius
 
     def intersect(self, ray: Ray):
-        #TODO
+        # done by us
         A_coefficient = np.dot(ray.direction)
         center_to_origin_vector = ray.origin - self.center
         B_coefficient = 2 * np.dot(ray.direction, center_to_origin_vector)
@@ -254,7 +254,7 @@ class Sphere(Object3D):
         else:
             return None
 
-            
+# Helper function to calculate t
 def quadratic_formula(A, B, C):
         discriminant = np.sqrt(B**2 - 4*A*C)
         if discriminant > 0:
