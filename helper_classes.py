@@ -84,8 +84,9 @@ class SpotLight(LightSource):
         return np.linalg.norm(self.position - intersection)
 
     def get_intensity(self, intersection):
-        #TODO
-        pass
+        # done by us
+        d = self.get_distance_from_light(intersection)
+        return self.intensity / (self.kc + self.kl*d + self.kq * (d**2))
 
 
 class Ray:
@@ -99,7 +100,16 @@ class Ray:
         intersections = None
         nearest_object = None
         min_distance = np.inf
-        #TODO
+        # done by us
+
+        for obj in objects:
+            obj_ray_intersection = obj.intersect(self)
+            if obj_ray_intersection:
+                t, current_obj = obj_ray_intersection
+                if min_distance > t: 
+                    min_distance = t
+                    nearest_object = current_obj 
+
         return nearest_object, min_distance
 
 
@@ -255,6 +265,7 @@ class Sphere(Object3D):
             return None
 
 # Helper function to calculate t
+# done by us
 def quadratic_formula(A, B, C):
         discriminant = np.sqrt(B**2 - 4*A*C)
         if discriminant > 0:
