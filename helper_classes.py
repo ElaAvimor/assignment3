@@ -100,6 +100,7 @@ class Ray:
         intersections = None
         nearest_object = None
         min_distance = np.inf
+        min_t = np.inf
         # done by us
 
         for obj in objects:
@@ -223,14 +224,14 @@ A /&&&&&&&&&&&&&&&&&&&&\ B &&&/ C
                  [4,2,1],
                  [2,4,0]]
         for idx in t_idx:
-            triangle = Triangle.__init__(idx)
+            triangle = Triangle(self.v_list[idx[0]], self.v_list[idx[1]], self.v_list[idx[2]])
             l.append(triangle)
         return l
 
     def apply_materials_to_triangles(self):
         # done by us
         for triangle in self.triangle_list:
-            triangle.set_material(self.ambient, self.defuse, self.specular, self.shininess, self.reflection)
+            triangle.set_material(self.ambient, self.diffuse, self.specular, self.shininess, self.reflection)
 
     def intersect(self, ray: Ray):
         # done by us
@@ -256,12 +257,12 @@ class Sphere(Object3D):
 
     def intersect(self, ray: Ray):
         # done by us
-        A_coefficient = np.dot(ray.direction)
+        A_coefficient = np.dot(ray.direction, ray.direction)
         center_to_origin_vector = ray.origin - self.center
         B_coefficient = 2 * np.dot(ray.direction, center_to_origin_vector)
-        C_coefficient = np.dot(center_to_origin_vector) - self.radius**2
+        C_coefficient = np.dot(center_to_origin_vector, center_to_origin_vector) - self.radius**2
 
-        t = quadratic_formula(self, A_coefficient, B_coefficient, C_coefficient)
+        t = quadratic_formula(A_coefficient, B_coefficient, C_coefficient)
         if t is not None:
             return t, self
         else:
@@ -277,7 +278,7 @@ def quadratic_formula(A, B, C):
             if t1 < 0 and t2 < 0:
                 return None
             else:
-                t = np.min(t1, t2)
+                t = min(t1, t2)
                 return t
         else:
             return None
