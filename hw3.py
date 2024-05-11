@@ -48,19 +48,31 @@ def get_color(ray, nearest_object, ambient, lights, p, level):
         reflected_obj,  = 
 
 
-def calc_diffuse_color(ray, light, nearest_object):
+def calc_diffuse_color(light, nearest_object, p):
+    if isinstance(nearest_object, Sphere):
+        intersection_normal = normalize(p - object.center)
+    else:
+        intersection_normal = normalize(object.normal)
+
     material_diffuse = nearest_object.diffuse
-    intersection_normal =
-    intersection_to_light =
-    light_intensity = light.get_intensity(nearest_object)
-    return material_diffuse * light_intensity * (np.dot( intersection_normal,intersection_to_light))
+    intersection_to_light = light.get_light_ray(p).direction
+    light_intensity = light.get_intensity(p)
+
+    return material_diffuse * light_intensity * (np.dot(intersection_normal,intersection_to_light))
 
 def calc_specular_color(ray, light, nearest_object):
+    if isinstance(nearest_object, Sphere):
+        normal = normalize(p - object.center)
+    else:
+        normal = normalize(object.normal)
+
+    intersection_to_light = light.get_light_ray(p).direction
     material_specular = nearest_object.specular
-    intersection_to_eye =
-    intersection_to_reflected_light =
+    intersection_to_eye = -1 * ray.direction
+    intersection_to_reflected_light = normalize(reflected(-1*intersection_to_light, normal))
     light_intensity = light.get_intensity(nearest_object)
-    return  material_specular * light_intensity * ((np.dot(intersection_to_eye,intesection_to_reflected_light))**nearest_object.shininess)
+
+    return  material_specular * light_intensity * ((np.dot(intersection_to_eye,intersection_to_reflected_light))**nearest_object.shininess)
 
 
 def return_if_light_shadow(light, ray, p ,nearest_object):
@@ -81,7 +93,7 @@ def construct_reflective_ray(ray, p, object):
     if isinstance(object, Sphere):
         normal = normalize(p - object.center)
     else:
-        normal = object.normal
+        normal = normalize(object.normal)
 
     reflected_ray_vector = reflected(ray.direction, normal)
     return Ray(p, reflected_ray_vector)
