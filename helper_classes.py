@@ -106,11 +106,14 @@ class Ray:
             obj_ray_intersection = obj.intersect(self)
             if obj_ray_intersection:
                 t, current_obj = obj_ray_intersection
-                if min_distance > t: 
-                    min_distance = t
+                if min_t > t: 
+                    min_t = t
                     nearest_object = current_obj 
+        p = self.origin + min_t * self.direction
+        min_distance = np.linalg.norm(p-self.origin)
+        
+        return min_distance, nearest_object, p
 
-        return nearest_object, min_distance
 
 
 class Object3D:
