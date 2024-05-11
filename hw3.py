@@ -45,8 +45,9 @@ def get_color(ray, nearest_object, ambient, lights, p, level):
         return color
     else:
         reflected_ray = construct_reflective_ray(ray, p, nearest_object)
-        reflected_obj,  = 
-
+        reflected_obj,min_distance, reflected_point = reflected_ray.nearest_intersected_object(nearest_object)
+        color += reflected_obj.reflection * get_color(reflected_ray, reflected_obj, ambient, lights,reflected_point, level)
+    return color
 
 def calc_diffuse_color(light, nearest_object, p):
     if isinstance(nearest_object, Sphere):
