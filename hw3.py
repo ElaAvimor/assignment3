@@ -17,8 +17,8 @@ def render_scene(camera, ambient, lights, objects, screen_size, max_depth):
             ray = Ray(origin, direction)
 
             color = np.zeros(3)
-            min_distance, nearest_object = ray.nearest_intersected_object(objects)
-            get_color(ray, nearest_object, ambient, lights, intersection_point)
+            min_distance, nearest_object, p = ray.nearest_intersected_object(objects)
+            get_color(ray, nearest_object, ambient, lights, p)
 
             # This is the main loop where each pixel color is computed.
 
@@ -41,9 +41,12 @@ def get_color(ray, nearest_object, ambient, lights, p, level):
             color += calc_diffuse_color(ray ,light, nearest_object) + calc_specular_color(ray,light, nearest_object)
 
     level -= 1
-    if level == 0:
+    if level <= 0:
         return color
     else:
+        reflected_ray = construct_reflective_ray(ray, p, nearest_object)
+        reflected_obj,  = 
+
 
 def calc_diffuse_color(ray, light, nearest_object):
     material_diffuse = nearest_object.diffuse
@@ -62,11 +65,28 @@ def calc_specular_color(ray, light, nearest_object):
 
 def return_if_light_shadow(light, ray, p ,nearest_object):
     light_ray = light.get_light_ray(p)
+    shadow_obj = light_ray.nearest_intersected_object(nearest_object)[0]
+    light_intersection_point = light_ray.nearest_intersected_object(nearest_object)[2]
 
+    if not shadow_obj:
+        return 1
+    else:
+        distance_from_shadow = np.linalg.norm(p - light_intersection_point)
+        if distance_from_shadow > light.get_distance_from_light(p):
+            return 1
+        else:
+            return 0
+   
+def construct_reflective_ray(ray, p, object):
+    if isinstance(object, Sphere):
+        normal = normalize(p - object.center)
+    else:
+        normal = object.normal
 
-
-
-
+    reflected_ray_vector = reflected(ray.direction, normal)
+    return Ray(p, reflected_ray_vector)
+    
+# def construct_refractive_ray()
 
 # Write your own objects and lights
 # TODO
