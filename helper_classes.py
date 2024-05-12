@@ -31,7 +31,7 @@ class DirectionalLight(LightSource):
     def get_light_ray(self,intersection_point):
         # done by us
         #return Ray(intersection_point, -self.direction)
-        n_direction = normalize(self.direction)
+        n_direction = -normalize(self.direction)
         return Ray(intersection_point, n_direction)
 
     # This function returns the distance from a point to the light source
