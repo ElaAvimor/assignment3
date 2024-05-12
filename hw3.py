@@ -23,8 +23,8 @@ def render_scene(camera, ambient, lights, objects, screen_size, max_depth):
             # done by us
             min_distance, nearest_object, p = ray.nearest_intersected_object(objects)
             if nearest_object:
-                print("Shape of global_ambient:", np.array(global_ambient), np.array(global_ambient).shape)
-                print("Shape of material_ambient:",np.array(nearest_object.ambient), np.array(nearest_object.ambient).shape)
+              #  print("Shape of global_ambient:", np.array(global_ambient), np.array(global_ambient).shape)
+               # print("Shape of material_ambient:",np.array(nearest_object.ambient), np.array(nearest_object.ambient).shape)
 
                 color = get_color(ray, nearest_object, global_ambient, lights, p, max_depth, objects)
 
@@ -91,13 +91,13 @@ def return_if_light_shadow(light, ray, p ,nearest_object, objects):
     min_distance, shadow_obj, light_intersection_point= light_ray.nearest_intersected_object(objects)
 
     if not shadow_obj:
-        return 1
+        return 0
     else:
         distance_from_shadow = np.linalg.norm(p - light_intersection_point)
         if distance_from_shadow > light.get_distance_from_light(p):
-            return 1
-        else:
             return 0
+        else:
+            return 1
    
 def construct_reflective_ray(ray, p, object):
     if isinstance(object, Sphere):
