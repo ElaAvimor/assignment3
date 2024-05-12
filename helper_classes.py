@@ -267,21 +267,31 @@ A /&&&&&&&&&&&&&&&&&&&&\ B &&&/ C
 
 class Sphere(Object3D):
     def __init__(self, center, radius: float):
-        self.center = center
+        self.center = np.array(center)
         self.radius = radius
 
     def intersect(self, ray: Ray):
-        # done by us
-        A_coefficient = np.dot(ray.direction, ray.direction)
-        center_to_origin_vector = ray.origin - self.center
-        B_coefficient = 2 * np.dot(ray.direction, center_to_origin_vector)
-        C_coefficient = np.dot(center_to_origin_vector, center_to_origin_vector) - self.radius**2
-
-        t = quadratic_formula(A_coefficient, B_coefficient, C_coefficient)
-        if t is not None:
-            return t, self
-        else:
+        # construct a vector from the origin of the ray to the center of the sphere
+        v = self.center - ray.origin
+        # find the length of the projection of v on the ray 
+        v_proj_len = np.dot(v, ray.direction)
+        # if the length of the projection is negative, the ray points to the opposite direction to the sphere -> there isn't an intersection
+        if v_proj_len < 0:
             return None
+        
+        # find the point on the ray which is the closest to the center of the sphere
+        p = ray.origin + v_proj_len*ray.direction
+        # calculate the distance from the center to p (which is the distane from the center to the ray)
+        distance = np.linalg.norm(p - self.center)
+
+        if distance > self.radius:
+            # no intersection
+            return None
+
+        # calculate the length of the ray from the intersection point to p (using Pythagoras)
+        ray_out_len = np.sqrt(self.radius**2 - distance**2)
+        t = v_proj_len - ray_out_len
+        return t, self
 
 # Helper function to calculate t
 # done by us

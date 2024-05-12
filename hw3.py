@@ -122,36 +122,35 @@ def construct_reflective_ray(ray, p, object):
 # Write your own objects and lights
 # done by us
 def your_own_scene():
-    # Define objects
-    sphere_a = Sphere([0.5, 0.4, -1.5], 0.5)
-    sphere_a.set_material([0.5, 0.5, 1], [0.5, 0.5, 1], [0.3, 0.3, 0.3], 150, 0.7)
+    sphere_a = Sphere(center=[0.5, 0.4, -1.5], radius=0.5)
+    sphere_a.set_material(ambient=[0.5, 0.5, 1], diffuse=[0.5, 0.5, 1], specular=[0.3, 0.3, 0.3], shininess=150, reflection=0.7)
 
-    # Assuming pyramid can be defined similar to other shapes
-    pyramid = Pyramid(
-        base=[[-1.5, -0.75, -2], [-1.5, -2, -2], [0.5, -2, -2], [0.5, -0.75, -2]],
-        apex=[-0.5, -2, -3]
-    )
+    sphere_b = Sphere(center=[-0.5, -0.4, -1], radius=0.3)
+    sphere_b.set_material(ambient=[1, 0, 0], diffuse=[1, 0, 0], specular=[0.3, 0.3, 0.3], shininess=130, reflection=0.5)
+
+    vertices_pyramid = [
+        [-1.5, -0.75, -2],  
+        [-1.5, -2, -2],     
+        [0.5, -2, -2],      
+        [0.5, -0.75, -2],   
+        [-0.5, -2, -3]      
+    ]
+    pyramid = Pyramid(vertices_pyramid)
     pyramid.set_material([1, 0.5, 0], [1, 0.5, 0], [0.2, 0.2, 0.2], 120, 0.6)
+    pyramid.apply_materials_to_triangles()
 
-    sphere_b = Sphere([-0.2, -0.3, -0.7], 0.3)
-    sphere_b.set_material([0, 0, 1], [0, 0, 1], [0.3, 0.3, 0.3], 130, 0.3)
+    plane = Plane(normal=[0, 1, 0], point=[0, -1, 0])
+    plane.set_material(ambient=[0.2, 0.2, 0.2], diffuse=[0.2, 0.2, 0.2], specular=[1, 1, 1], shininess=1000, reflection=0.5)
 
-    plane = Plane([0, 1, 0], [0, -2, 0])
-    plane.set_material([0.2, 0.2, 0.2], [0.2, 0.2, 0.2], [1, 1, 1], 1000, 0.5)
+    # Lights
+    light1 = PointLight(intensity=[0.8, 0.8, 0.8], position=[2, 2, 0], kc=0.1, kl=0.05, kq=0.01)
+    light2 = PointLight(intensity=[0.8, 0.8, 0.8], position=[-2, 2, 0], kc=0.1, kl=0.05, kq=0.01)
 
-    background = Plane([0, 0, 1], [0, 0, -10])
-    background.set_material([0.2, 0.7, 0.2], [0.2, 0.7, 0.2], [1, 1, 1], 100, 0.5)
+    # Environment
+    camera = [0, 0, 5]  # Adjust camera position for a better view
 
-    objects = [sphere_a, sphere_b, pyramid, plane, background]
-
-    # Define lights
-    light1 = PointLight([1, 1, 1], [2, 2, 1], 0.1, 0.1, 0.1)
-    light2 = PointLight([1, 1, 1], [-2, 2, 1], 0.1, 0.1, 0.1)
-
+    # Scene
+    objects = [sphere_a, sphere_b, pyramid, plane]
     lights = [light1, light2]
 
-    ambient = np.array([0.3, 0.2, 0.1])
-
-    camera = np.array([0, 0, 1])
-
-    return camera, ambient, lights, objects
+    return camera, lights, objects
