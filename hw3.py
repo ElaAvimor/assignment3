@@ -26,7 +26,7 @@ def render_scene(camera, ambient, lights, objects, screen_size, max_depth):
                 # print("Shape of global_ambient:", np.array(global_ambient), np.array(global_ambient).shape)
                 # print("Shape of material_ambient:",np.array(nearest_object.ambient), np.array(nearest_object.ambient).shape)
 
-                color = get_color(ray, nearest_object, global_ambient, lights, p, max_depth, objects)
+                color += get_color(ray, nearest_object, global_ambient, lights, p, max_depth, objects)
 
             
             # We clip the values between 0 and 1 so all pixel values will make sense.
@@ -125,10 +125,15 @@ def your_own_scene():
     camera = np.array([0, 0, 1])
     
     # Lights
-    lights = [
-        DirectionalLight(intensity=1.0, direction=[1, -1, -0.5]),
-        PointLight(intensity=0.5, position=[2, 2, 5], kc=1, kl=0.1, kq=0.01)
-    ]
+    directional_light = DirectionalLight(intensity= np.array([0.7, 0.7, 0.7]),direction=np.array([0, 0, 4]))
+    
+    spotlight_a = SpotLight(intensity=np.array([1, 5, 0]), position=np.array([-2, -0.25, -2]), direction=np.array([0, 1, -1]),
+                         kc=0.1, kl=0.05, kq=0.05)
+    
+    spotlight_b = SpotLight(intensity=np.array([3, 0, 3]), position=np.array([1, -0.25, 1]), direction=np.array([1, 1, -1]),
+                         kc=0.1, kl=0.05, kq=0.05)
+
+    lights = [directional_light, spotlight_a, spotlight_b]
     
     # Objects
     plane = Plane(normal=[0, 1, 0], point=[0, -1, 0])
@@ -136,24 +141,24 @@ def your_own_scene():
     pyramid = Pyramid(v_list=[[-1, 0, 2], [1, 0, 2], [0, 0, 4], [0, 2, 3], [0, -2, 3]])
     
     pyramid.set_material(
-        ambient=[0.1, 0.1, 0.1], 
-        diffuse=[0.6, 0.7, 0.8], 
+        ambient=[0.2, 0.2, 0.2], 
+        diffuse=[0.2, 0.2, 0.2], 
         specular=[0.5, 0.5, 0.5], 
-        shininess=50, 
+        shininess=750, 
         reflection=0.5
     )
 
     pyramid.apply_materials_to_triangles()
     
     sphere.set_material(
-        ambient=[0.1, 0.1, 0.1], 
+        ambient=[0.2, 0.2, 0.2], 
         diffuse=[1, 0, 0], 
         specular=[1, 1, 1], 
         shininess=100, 
         reflection=0.3
     )
     plane.set_material(
-        ambient=[0.1, 0.1, 0.1], 
+        ambient=[0.2, 0.2, 0.2], 
         diffuse=[0.3, 0.4, 0.5], 
         specular=[0.2, 0.2, 0.2], 
         shininess=10, 
