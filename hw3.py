@@ -7,6 +7,7 @@ def render_scene(camera, ambient, lights, objects, screen_size, max_depth):
     screen = (-1, 1 / ratio, 1, -1 / ratio)  # left, top, right, bottom
 
     image = np.zeros((height, width, 3))
+    global_ambient = ambient
 
     for i, y in enumerate(np.linspace(screen[1], screen[3], height)):
         for j, x in enumerate(np.linspace(screen[0], screen[2], width)):
@@ -22,7 +23,10 @@ def render_scene(camera, ambient, lights, objects, screen_size, max_depth):
             # done by us
             min_distance, nearest_object, p = ray.nearest_intersected_object(objects)
             if nearest_object:
-                color = get_color(ray, nearest_object, ambient, lights, p, max_depth, objects)
+                print("Shape of global_ambient:", np.array(global_ambient), np.array(global_ambient).shape)
+                print("Shape of material_ambient:",np.array(nearest_object.ambient), np.array(nearest_object.ambient).shape)
+
+                color = get_color(ray, nearest_object, global_ambient, lights, p, max_depth, objects)
 
             
             # We clip the values between 0 and 1 so all pixel values will make sense.
@@ -31,8 +35,8 @@ def render_scene(camera, ambient, lights, objects, screen_size, max_depth):
     return image
 
 
-def get_color(ray, nearest_object, ambient, lights, p, level, objects):
-    global_ambient = np.array(ambient)
+def get_color(ray, nearest_object, global_ambient, lights, p, level, objects):
+    global_ambient = np.array(global_ambient)
     material_ambient = np.array(nearest_object.ambient)
     ambient_color = global_ambient * material_ambient
     diffuse_color = 0
@@ -50,7 +54,7 @@ def get_color(ray, nearest_object, ambient, lights, p, level, objects):
         reflected_ray = construct_reflective_ray(ray, p, nearest_object)
         min_distance, reflected_obj, reflected_point = reflected_ray.nearest_intersected_object(objects)
         if reflected_obj:
-            reflective_color = reflected_obj.reflection * get_color(reflected_ray, reflected_obj, ambient, lights,reflected_point, level, objects)
+            reflective_color = reflected_obj.reflection * get_color(reflected_ray, reflected_obj, global_ambient, lights,reflected_point, level, objects)
 
     color = ambient_color + diffuse_color + specular_color + reflective_color
     return color.astype(np.float64)
@@ -129,6 +133,9 @@ def your_own_scene():
         shininess=50, 
         reflection=0.5
     )
+
+    pyramid.apply_materials_to_triangles()
+    
     sphere.set_material(
         ambient=[0.1, 0.1, 0.1], 
         diffuse=[1, 0, 0], 
