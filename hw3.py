@@ -23,8 +23,8 @@ def render_scene(camera, ambient, lights, objects, screen_size, max_depth):
             # done by us
             min_distance, nearest_object, p = ray.nearest_intersected_object(objects)
             if nearest_object:
-              #  print("Shape of global_ambient:", np.array(global_ambient), np.array(global_ambient).shape)
-               # print("Shape of material_ambient:",np.array(nearest_object.ambient), np.array(nearest_object.ambient).shape)
+                # print("Shape of global_ambient:", np.array(global_ambient), np.array(global_ambient).shape)
+                # print("Shape of material_ambient:",np.array(nearest_object.ambient), np.array(nearest_object.ambient).shape)
 
                 color = get_color(ray, nearest_object, global_ambient, lights, p, max_depth, objects)
 
@@ -36,8 +36,12 @@ def render_scene(camera, ambient, lights, objects, screen_size, max_depth):
 
 
 def get_color(ray, nearest_object, global_ambient, lights, p, level, objects):
-    global_ambient = np.array(global_ambient)
-    material_ambient = np.array(nearest_object.ambient)
+    global_ambient = global_ambient
+    material_ambient = nearest_object.ambient
+
+    #print("Shape of global_ambient:", np.array(global_ambient).shape)
+    #print("Shape of material_ambient:", np.array(nearest_object.ambient).shape)
+
     ambient_color = global_ambient * material_ambient
     diffuse_color = 0
     specular_color = 0
@@ -60,27 +64,33 @@ def get_color(ray, nearest_object, global_ambient, lights, p, level, objects):
     return color.astype(np.float64)
 
 def calc_diffuse_color(light, nearest_object, p):
-    normal = nearest_object.normal
     if isinstance(nearest_object, Sphere):
         normal = normalize(p - nearest_object.center)
+    else: 
+         normal = nearest_object.normal
+
     light_vec = light.get_light_ray(p).direction
     dot_product = np.dot(normal, light_vec)
     dot_product = max(dot_product, 0)  # Ensure no negative lighting
-    material_diffuse = nearest_object.diffuse
+    material_diffuse = np.array(nearest_object.diffuse) 
     light_intensity = light.get_intensity(p)
+
     return material_diffuse * light_intensity * dot_product
 
 
 def calc_specular_color(ray, light, nearest_object, p):
-    normal = nearest_object.normal
     if isinstance(nearest_object, Sphere):
         normal = normalize(p - nearest_object.center)
+    else:
+         normal = nearest_object.normal
+
     light_vec = light.get_light_ray(p). direction
     reflect_dir = reflected(-light_vec, normal)
     view_dir = normalize(ray.origin - p)
     spec_angle = max(np.dot(reflect_dir, view_dir), 0)
-    material_specular = nearest_object.specular
+    material_specular = np.array(nearest_object.specular)
     light_intensity = light.get_intensity(p)
+
     return material_specular * light_intensity * (spec_angle ** nearest_object.shininess)
 
 
