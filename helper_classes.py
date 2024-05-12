@@ -141,8 +141,12 @@ class Plane(Object3D):
         self.point = np.array(point)
 
     def intersect(self, ray: Ray):
+        denominator = np.dot(self.normal, ray.direction)
+        if abs(denominator) < 1e-6: 
+            return None 
+
         v = self.point - ray.origin
-        t = np.dot(v, self.normal) / (np.dot(self.normal, ray.direction) + 1e-6)
+        t = np.dot(v, self.normal) / denominator
         if t > 0:
             return t, self
         else:

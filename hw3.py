@@ -49,7 +49,7 @@ def get_color(ray, nearest_object, global_ambient, lights, p, level, objects):
 
     for light in lights:
         shadow = return_if_light_shadow(light, p, objects)
-        if shadow == 0:
+        if shadow == 1:
             diffuse_color += calc_diffuse_color(light, nearest_object, p)
             specular_color += calc_specular_color(ray, light, nearest_object, p)
 
