@@ -48,10 +48,10 @@ def get_color(ray, nearest_object, global_ambient, lights, p, level, objects):
     reflective_color = 0
 
     for light in lights:
-        shadow = return_if_light_shadow(light, ray, p ,nearest_object, objects)
-        if shadow == 1:
-            diffuse_color = calc_diffuse_color(light, nearest_object, p)
-            specular_color = calc_specular_color(ray, light, nearest_object, p)
+        shadow = return_if_light_shadow(light, p, objects)
+        if shadow == 0:
+            diffuse_color += calc_diffuse_color(light, nearest_object, p)
+            specular_color += calc_specular_color(ray, light, nearest_object, p)
 
     level -= 1
     if level > 0:
@@ -67,7 +67,7 @@ def calc_diffuse_color(light, nearest_object, p):
     if isinstance(nearest_object, Sphere):
         normal = normalize(p - nearest_object.center)
     else: 
-         normal = nearest_object.normal
+        normal = nearest_object.normal
 
     light_vec = light.get_light_ray(p).direction
     dot_product = np.dot(normal, light_vec)
@@ -95,18 +95,18 @@ def calc_specular_color(ray, light, nearest_object, p):
 
 
 
-def return_if_light_shadow(light, ray, p ,nearest_object, objects):
+def return_if_light_shadow(light, p, objects):
     light_ray = light.get_light_ray(p)
-    min_distance, shadow_obj, light_intersection_point= light_ray.nearest_intersected_object(objects)
+    min_distance, shadow_obj, light_intersection_point = light_ray.nearest_intersected_object(objects)
 
-    if not shadow_obj:
-        return 0
-    else:
+    if shadow_obj:
         distance_from_shadow = np.linalg.norm(p - light_intersection_point)
         if distance_from_shadow > light.get_distance_from_light(p):
-            return 0
-        else:
             return 1
+        else:
+            return 0
+    else:
+        return 1
    
 def construct_reflective_ray(ray, p, object):
     if isinstance(object, Sphere):
@@ -120,7 +120,7 @@ def construct_reflective_ray(ray, p, object):
 # def construct_refractive_ray()
 
 # Write your own objects and lights
-# TODO
+# done by us
 def your_own_scene():
     camera = np.array([0, 0, 1])
     
