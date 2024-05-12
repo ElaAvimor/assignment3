@@ -122,49 +122,36 @@ def construct_reflective_ray(ray, p, object):
 # Write your own objects and lights
 # done by us
 def your_own_scene():
+    # Define objects
+    sphere_a = Sphere([0.5, 0.4, -1.5], 0.5)
+    sphere_a.set_material([0.5, 0.5, 1], [0.5, 0.5, 1], [0.3, 0.3, 0.3], 150, 0.7)
+
+    # Assuming pyramid can be defined similar to other shapes
+    pyramid = Pyramid(
+        base=[[-1.5, -0.75, -2], [-1.5, -2, -2], [0.5, -2, -2], [0.5, -0.75, -2]],
+        apex=[-0.5, -2, -3]
+    )
+    pyramid.set_material([1, 0.5, 0], [1, 0.5, 0], [0.2, 0.2, 0.2], 120, 0.6)
+
+    sphere_b = Sphere([-0.2, -0.3, -0.7], 0.3)
+    sphere_b.set_material([0, 0, 1], [0, 0, 1], [0.3, 0.3, 0.3], 130, 0.3)
+
+    plane = Plane([0, 1, 0], [0, -2, 0])
+    plane.set_material([0.2, 0.2, 0.2], [0.2, 0.2, 0.2], [1, 1, 1], 1000, 0.5)
+
+    background = Plane([0, 0, 1], [0, 0, -10])
+    background.set_material([0.2, 0.7, 0.2], [0.2, 0.7, 0.2], [1, 1, 1], 100, 0.5)
+
+    objects = [sphere_a, sphere_b, pyramid, plane, background]
+
+    # Define lights
+    light1 = PointLight([1, 1, 1], [2, 2, 1], 0.1, 0.1, 0.1)
+    light2 = PointLight([1, 1, 1], [-2, 2, 1], 0.1, 0.1, 0.1)
+
+    lights = [light1, light2]
+
+    ambient = np.array([0.3, 0.2, 0.1])
+
     camera = np.array([0, 0, 1])
-    
-    # Lights
-    directional_light = DirectionalLight(intensity= np.array([0.7, 0.7, 0.7]),direction=np.array([0, 0, 4]))
-    
-    spotlight_a = SpotLight(intensity=np.array([1, 5, 0]), position=np.array([-2, -0.25, -2]), direction=np.array([0, 1, -1]),
-                         kc=0.1, kl=0.05, kq=0.05)
-    
-    spotlight_b = SpotLight(intensity=np.array([3, 0, 3]), position=np.array([1, -0.25, 1]), direction=np.array([1, 1, -1]),
-                         kc=0.1, kl=0.05, kq=0.05)
 
-    lights = [directional_light, spotlight_a, spotlight_b]
-    
-    # Objects
-    plane = Plane(normal=[0, 1, 0], point=[0, -1, 0])
-    sphere = Sphere(center=[0, 0, 3], radius=1)
-    pyramid = Pyramid(v_list=[[-1, 0, 2], [1, 0, 2], [0, 0, 4], [0, 2, 3], [0, -2, 3]])
-    
-    pyramid.set_material(
-        ambient=[0.2, 0.2, 0.2], 
-        diffuse=[0.2, 0.2, 0.2], 
-        specular=[0.5, 0.5, 0.5], 
-        shininess=750, 
-        reflection=0.5
-    )
-
-    pyramid.apply_materials_to_triangles()
-    
-    sphere.set_material(
-        ambient=[0.2, 0.2, 0.2], 
-        diffuse=[1, 0, 0], 
-        specular=[1, 1, 1], 
-        shininess=100, 
-        reflection=0.3
-    )
-    plane.set_material(
-        ambient=[0.2, 0.2, 0.2], 
-        diffuse=[0.3, 0.4, 0.5], 
-        specular=[0.2, 0.2, 0.2], 
-        shininess=10, 
-        reflection=0.1
-    )
-
-    objects = [plane, sphere, pyramid]
-    
-    return camera, lights, objects
+    return camera, ambient, lights, objects

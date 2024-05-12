@@ -82,21 +82,20 @@ class SpotLight(LightSource):
     # This function returns the ray that goes from the light source to a point
     def get_light_ray(self, intersection):
         # done by us
-        return Ray(intersection, normalize(self.position - intersection))
+        return Ray(intersection, normalize(-self.direction))
 
     def get_distance_from_light(self, intersection):
         # done by us
         return np.linalg.norm(self.position - intersection)
 
     def get_intensity(self, intersection):
-        # done by us
-        d = self.get_distance_from_light(intersection)
-        v = normalize(self.direction)
-        v_d = self.get_light_ray(intersection).direction
-        v_vd_dot = np.dot(v, v_d)
-
-        return (self.intensity * v_vd_dot) / (self.kc + self.kl*d + self.kq * (d**2))
-
+        direction_to_point = normalize(intersection - self.position)
+        dot_product = np.dot(direction_to_point, self.direction)
+        # Implement a smoother falloff curve
+        effective_intensity = self.intensity * (max(dot_product, 0) ** 2)        
+        distance = np.linalg.norm(intersection - self.position)
+        attenuation = self.kc + self.kl * distance + self.kq * (distance ** 2)
+        return effective_intensity / attenuation
 
 class Ray:
     def __init__(self, origin, direction):
@@ -119,11 +118,11 @@ class Ray:
                 if min_t > t: 
                     min_t = t
                     nearest_object = current_obj 
-        p = self.origin + min_t * self.direction
-        min_distance = np.linalg.norm(p-self.origin)
-        
-        return min_distance, nearest_object, p
-
+        if nearest_object is not None:
+            p = self.origin + min_t * self.direction
+            min_distance = np.linalg.norm(p-self.origin)
+            return min_distance, nearest_object, p
+        return min_distance, nearest_object, None
 
 
 class Object3D:
