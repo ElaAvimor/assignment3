@@ -10,8 +10,8 @@ def normalize(vector):
 # This function returns the vector that reflects from the surface
 def reflected(vector, axis):
     # done by us
-    axis = normalize(axis)
-    return vector - 2 * np.dot(vector, axis) * axis
+    n_axis = normalize(axis)
+    return vector - 2 * np.dot(vector, n_axis) * n_axis
 
 ## Lights
 class LightSource:
@@ -24,22 +24,25 @@ class DirectionalLight(LightSource):
     def __init__(self, intensity, direction):
         super().__init__(intensity)
         # done by us
-        self.direction = normalize(np.array(direction))
+        #self.direction = normalize(np.array(direction))
+        self.direction = normalize(direction)
 
     # This function returns the ray that goes from the light source to a point
     def get_light_ray(self,intersection_point):
         # done by us
-        return Ray(intersection_point, -self.direction)
+        #return Ray(intersection_point, -self.direction)
+        n_direction = normalize(self.direction)
+        return Ray(intersection_point, n_direction)
 
     # This function returns the distance from a point to the light source
     def get_distance_from_light(self, intersection):
         # done by us
-        return np.inf # Distance is considered infinite for directional light
+        return np.inf
 
     # This function returns the light intensity at a point
     def get_intensity(self, intersection):
         # done by us
-        return self.intensity # Intensity is the same for all points in the scene in directional light 
+        return self.intensity 
 
 
 class PointLight(LightSource):
@@ -68,8 +71,10 @@ class SpotLight(LightSource):
     def __init__(self, intensity, position, direction, kc, kl, kq):
         super().__init__(intensity)
         # done by us
-        self.position = np.array(position)
-        self.direction = normalize(np.array(direction))
+        #self.position = np.array(position)
+        self.position = position
+        #self.direction = normalize(np.array(direction))
+        self.direction = np.array(direction)
         self.kc = kc
         self.kl = kl
         self.kq = kq
@@ -86,7 +91,11 @@ class SpotLight(LightSource):
     def get_intensity(self, intersection):
         # done by us
         d = self.get_distance_from_light(intersection)
-        return self.intensity / (self.kc + self.kl*d + self.kq * (d**2))
+        v = normalize(self.direction)
+        v_d = self.get_light_ray(intersection).direction
+        v_vd_dot = np.dot(v, v_d)
+
+        return (self.intensity * v_vd_dot) / (self.kc + self.kl*d + self.kq * (d**2))
 
 
 class Ray:
@@ -173,8 +182,8 @@ class Triangle(Object3D):
             edge_ba = self.b - self.a
             edge_ca = self.c - self.a
             triangle_area = np.linalg.norm(np.cross(edge_ba,edge_ca)) /2
-            alpha = np.linalg.norm(np.cross((self.b - P), (self.c - P))/ 2 * triangle_area)
-            beta = np.linalg.norm(np.cross((self.b - P), (self.c - P))/ 2 * triangle_area)
+            alpha = (np.linalg.norm(np.cross((self.b - P), (self.c - P)))) / (2 * triangle_area)
+            beta = (np.linalg.norm(np.cross((self.b - P), (self.c - P)))) / (2 * triangle_area)
             gamma = 1 - alpha - beta
             if (0 <= alpha <= 1) and (0 <= beta <= 1) and (0 <= gamma <= 1) and (alpha + beta + gamma == 1):
                 return (t, self)
