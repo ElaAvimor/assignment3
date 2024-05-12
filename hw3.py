@@ -60,30 +60,29 @@ def get_color(ray, nearest_object, global_ambient, lights, p, level, objects):
     return color.astype(np.float64)
 
 def calc_diffuse_color(light, nearest_object, p):
-    if isinstance(nearest_object, Sphere):
-        intersection_normal = normalize(p - nearest_object.center)
-    else:
-        intersection_normal = normalize(nearest_object.normal)
-
-    material_diffuse = nearest_object.diffuse
-    intersection_to_light = light.get_light_ray(p).direction
-    light_intensity = light.get_intensity(p)
-
-    return material_diffuse * light_intensity * (np.dot(intersection_normal,intersection_to_light))
-
-def calc_specular_color(ray, light, nearest_object, p):
+    normal = nearest_object.normal
     if isinstance(nearest_object, Sphere):
         normal = normalize(p - nearest_object.center)
-    else:
-        normal = normalize(nearest_object.normal)
-
-    intersection_to_light = light.get_light_ray(p).direction
-    material_specular = nearest_object.specular
-    intersection_to_eye = -1 * ray.direction
-    intersection_to_reflected_light = normalize(reflected(-1*intersection_to_light, normal))
+    light_vec = light.get_light_ray(p).direction
+    dot_product = np.dot(normal, light_vec)
+    dot_product = max(dot_product, 0)  # Ensure no negative lighting
+    material_diffuse = nearest_object.diffuse
     light_intensity = light.get_intensity(p)
+    return material_diffuse * light_intensity * dot_product
 
-    return  material_specular * light_intensity * ((np.dot(intersection_to_eye,intersection_to_reflected_light))**nearest_object.shininess)
+
+def calc_specular_color(ray, light, nearest_object, p):
+    normal = nearest_object.normal
+    if isinstance(nearest_object, Sphere):
+        normal = normalize(p - nearest_object.center)
+    light_vec = light.get_light_ray(p). direction
+    reflect_dir = reflected(-light_vec, normal)
+    view_dir = normalize(ray.origin - p)
+    spec_angle = max(np.dot(reflect_dir, view_dir), 0)
+    material_specular = nearest_object.specular
+    light_intensity = light.get_intensity(p)
+    return material_specular * light_intensity * (spec_angle ** nearest_object.shininess)
+
 
 
 def return_if_light_shadow(light, ray, p ,nearest_object, objects):

@@ -174,23 +174,26 @@ class Triangle(Object3D):
         return normalize(np.cross(edge_ba, edge_ca))
 
     def intersect(self, ray: Ray):
-        # done by us
-        intPlane = self.plane.intersect(ray)
-        if intPlane is not None:
-            t, plane = intPlane
-            P = ray.origin + t*ray.direction
-            edge_ba = self.b - self.a
-            edge_ca = self.c - self.a
-            triangle_area = np.linalg.norm(np.cross(edge_ba,edge_ca)) /2
-            alpha = (np.linalg.norm(np.cross((self.b - P), (self.c - P)))) / (2 * triangle_area)
-            beta = (np.linalg.norm(np.cross((self.b - P), (self.c - P)))) / (2 * triangle_area)
-            gamma = 1 - alpha - beta
-            if (0 <= alpha <= 1) and (0 <= beta <= 1) and (0 <= gamma <= 1) and (alpha + beta + gamma == 1):
-                return (t, self)
-            else:
-                return None
-        else:
+        edge1 = self.b - self.a
+        edge2 = self.c - self.a
+        h = np.cross(ray.direction, edge2)
+        a = np.dot(edge1, h)
+        if -1e-6 < a < 1e-6:
+            return None  # The ray is parallel to this triangle
+        f = 1.0 / a
+        s = ray.origin - self.a
+        u = f * np.dot(s, h)
+        if u < 0.0 or u > 1.0:
             return None
+        q = np.cross(s, edge1)
+        v = f * np.dot(ray.direction, q)
+        if v < 0.0 or u + v > 1.0:
+            return None
+        t = f * np.dot(edge2, q)
+        if t > 1e-6:  # t must be positive and sufficiently large to be considered an intersection
+            return t, self
+        return None
+
         
 
 class Pyramid(Object3D):
@@ -280,15 +283,25 @@ class Sphere(Object3D):
 # Helper function to calculate t
 # done by us
 def quadratic_formula(A, B, C):
-        discriminant = np.sqrt(B**2 - 4*A*C)
-        if discriminant > 0:
-            t1 = (-1*B + discriminant) / 2*A
-            t2 = (-1*B - discriminant) / 2*A
-            if t1 < 0 and t2 < 0:
-                return None
+        if B**2 - 4*A*C >=0:
+            discriminant = np.sqrt(B**2 - 4*A*C)
+            if discriminant > 0:
+                t1 = (-1*B + discriminant) / 2*A
+                t2 = (-1*B - discriminant) / 2*A
+                if t1 < 0 and t2 < 0:
+                    return None
+                else:
+                    t = min(t1, t2)
+                    return t
+            elif discriminant == 0:
+                t1 = (-1*B + discriminant) / 2*A
+                if t1 < 0:
+                        return None
+                else:
+                    t = min(t1, t2)
+                    return t
             else:
-                t = min(t1, t2)
-                return t
+                return None
         else:
             return None
 
