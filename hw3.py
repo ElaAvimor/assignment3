@@ -96,17 +96,15 @@ def calc_specular_color(ray, light, nearest_object, p):
 
 
 def return_if_light_shadow(light, p, objects):
-    light_ray = light.get_light_ray(p)
-    min_distance, shadow_obj, light_intersection_point = light_ray.nearest_intersected_object(objects)
-
-    if shadow_obj:
-        distance_from_shadow = np.linalg.norm(p - light_intersection_point)
-        if distance_from_shadow > light.get_distance_from_light(p):
-            return 1
-        else:
-            return 0
-    else:
+    epsilon = 0.001  # Small bias to prevent self-shadowing
+    direction_to_light = normalize(light.get_light_ray(p).direction)
+    biased_hit_point = p + epsilon * direction_to_light
+    hit_to_light_ray = Ray(biased_hit_point, direction_to_light)
+    hit_to_light_dist = light.get_distance_from_light(p)
+    dist, nearest_obj, _ = hit_to_light_ray.nearest_intersected_object(objects)
+    if nearest_obj is None or dist >= hit_to_light_dist:
         return 1
+    return 0
    
 def construct_reflective_ray(ray, p, object):
     if isinstance(object, Sphere):

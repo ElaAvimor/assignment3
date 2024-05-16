@@ -298,25 +298,25 @@ class Sphere(Object3D):
 # Helper function to calculate t
 # done by us
 def quadratic_formula(A, B, C):
-        if B**2 - 4*A*C >=0:
-            discriminant = np.sqrt(B**2 - 4*A*C)
-            if discriminant > 0:
-                t1 = (-1*B + discriminant) / 2*A
-                t2 = (-1*B - discriminant) / 2*A
-                if t1 < 0 and t2 < 0:
-                    return None
-                else:
-                    t = min(t1, t2)
-                    return t
-            elif discriminant == 0:
-                t1 = (-1*B + discriminant) / 2*A
-                if t1 < 0:
-                        return None
-                else:
-                    t = min(t1, t2)
-                    return t
-            else:
+    if B**2 - 4*A*C >=0:
+        discriminant = np.sqrt(B**2 - 4*A*C)
+        if discriminant > 0:
+            t1 = (-1*B + discriminant) / 2*A
+            t2 = (-1*B - discriminant) / 2*A
+            if t1 < 0 and t2 < 0:
                 return None
+            else:
+                t = min(t1, t2)
+                return t
+        elif discriminant == 0:
+            t1 = (-1*B + discriminant) / 2*A
+            if t1 < 0:
+                    return None
+            else:
+                t = min(t1, t2)
+                return t
         else:
             return None
+    else:
+        return None
 
