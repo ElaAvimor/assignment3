@@ -120,35 +120,58 @@ def construct_reflective_ray(ray, p, object):
 # Write your own objects and lights
 # done by us
 def your_own_scene():
-    sphere_a = Sphere(center=[0.5, 0.4, -1.5], radius=0.5)
-    sphere_a.set_material(ambient=[0.5, 0.5, 1], diffuse=[0.5, 0.5, 1], specular=[0.3, 0.3, 0.3], shininess=150, reflection=0.7)
+    objects = []
+    lights = []
 
-    sphere_b = Sphere(center=[-0.5, -0.4, -1], radius=0.3)
-    sphere_b.set_material(ambient=[1, 0, 0], diffuse=[1, 0, 0], specular=[0.3, 0.3, 0.3], shininess=130, reflection=0.5)
+    # Pikachu
+    # Body
+    body = Sphere([0, 0, -2], 1)
+    body.set_material([1, 1, 0], [1, 1, 0], [0.5, 0.5, 0.3], 150, 0.1)
+    objects.append(body)
 
-    vertices_pyramid = [
-        [-1.5, -0.75, -2],  
-        [-1.5, -2, -2],     
-        [0.5, -2, -2],      
-        [0.5, -0.75, -2],   
-        [-0.5, -2, -3]      
-    ]
-    pyramid = Pyramid(vertices_pyramid)
-    pyramid.set_material([1, 0.5, 0], [1, 0.5, 0], [0.2, 0.2, 0.2], 120, 0.6)
-    pyramid.apply_materials_to_triangles()
+    # Ears
+    # ear1 = Pyramid([
+    #     [0.6, 0.8, -1.5], [0.9, 0.8, -1.5], [0.75, 1.5, -2]  # Adjust coordinates as needed
+    # ])
+    # ear1.set_material([0, 0, 0], [0, 0, 0], [0, 0, 0], 10, 0.1)
+    # objects.append(ear1)
 
-    plane = Plane(normal=[0, 1, 0], point=[0, -1, 0])
-    plane.set_material(ambient=[0.2, 0.2, 0.2], diffuse=[0.2, 0.2, 0.2], specular=[1, 1, 1], shininess=1000, reflection=0.5)
+    # ear2 = Pyramid([
+    #     [-0.6, 0.8, -1.5], [-0.9, 0.8, -1.5], [-0.75, 1.5, -2]  # Adjust coordinates as needed
+    # ])
+    # ear2.set_material([0, 0, 0], [0, 0, 0], [0, 0, 0], 10, 0.1)
+    # objects.append(ear2)
+
+    # Pokeball
+    # Bottom half
+    bottom_half = Sphere([2, 0, -1], 0.5)
+    bottom_half.set_material([1, 1, 1], [1, 1, 1], [1, 1, 1], 100, 0.2)
+    objects.append(bottom_half)
+
+    # Top half
+    top_half = Sphere([2, 0, -0.5], 0.5)
+    top_half.set_material([1, 0, 0], [1, 0, 0], [1, 0, 0], 100, 0.2)
+    objects.append(top_half)
+
+    # Center button
+    center_button = Sphere([2, 0, -0.75], 0.1)
+    center_button.set_material([1, 1, 1], [1, 1, 1], [1, 1, 1], 100, 0.5)
+    objects.append(center_button)
+
+    # Ground plane
+    plane = Plane([0, 1, 0], [0, -1, 0])
+    plane.set_material([0.2, 0.2, 0.2], [0.2, 0.2, 0.2], [1, 1, 1], 1000, 0.5)
+    objects.append(plane)
 
     # Lights
-    light1 = PointLight(intensity=[0.8, 0.8, 0.8], position=[2, 2, 0], kc=0.1, kl=0.05, kq=0.01)
-    light2 = PointLight(intensity=[0.8, 0.8, 0.8], position=[-2, 2, 0], kc=0.1, kl=0.05, kq=0.01)
+    # Directional light simulating sunlight
+    light1 = DirectionalLight([1, 1, 1], direction=[-1, -0.5, -0.5])
+    lights.append(light1)
 
-    # Environment
-    camera = [0, 0, 5]  # Adjust camera position for a better view
+    # Ambient light for softer shadows
+    light2 = PointLight([0.5, 0.5, 0.5], position=[2, 2, 0], kc=0.1, kl=0.1, kq=0.01)
+    lights.append(light2)
 
-    # Scene
-    objects = [sphere_a, sphere_b, pyramid, plane]
-    lights = [light1, light2]
+    camera = np.array([0,0,1])
 
-    return camera, lights, objects
+    return camera, lights, objects 
