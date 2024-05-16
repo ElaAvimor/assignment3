@@ -123,55 +123,102 @@ def your_own_scene():
     objects = []
     lights = []
 
-    # Pikachu
-    # Body
-    body = Sphere([0, 0, -2], 1)
-    body.set_material([1, 1, 0], [1, 1, 0], [0.5, 0.5, 0.3], 150, 0.1)
-    objects.append(body)
+    # Pikachu's Body
+    pikachu_body = Sphere(center=[0, 0, -5], radius=1.7)
+    pikachu_body.set_material(ambient=np.array([1, 1, 0]),  # Yellow ambient
+                              diffuse=np.array([1, 1, 0]),  # Yellow diffuse
+                              specular=np.array([1, 1, 0]),  # Yellow specular
+                              shininess=50,
+                              reflection=np.array([0.5, 0.5, 0.5]))
+    objects.append(pikachu_body)
+    # Pikachu's Eyes
+    pikachu_eye_left = Sphere(center=[-0.6, 0.75, -3.5], radius=0.25)  # Moved closer to the front
+    pikachu_eye_left.set_material(ambient=np.array([0, 0, 0]),
+                                  diffuse=np.array([0, 0, 0]),
+                                  specular=np.array([1, 1, 1]),
+                                  shininess=100,
+                                  reflection=np.array([0.5, 0.5, 0.5]))
+    objects.append(pikachu_eye_left)
 
-    # Ears
-    # ear1 = Pyramid([
-    #     [0.6, 0.8, -1.5], [0.9, 0.8, -1.5], [0.75, 1.5, -2]  # Adjust coordinates as needed
-    # ])
-    # ear1.set_material([0, 0, 0], [0, 0, 0], [0, 0, 0], 10, 0.1)
-    # objects.append(ear1)
+    pikachu_eye_right = Sphere(center=[0.6, 0.75, -3.5], radius=0.25)  # Moved closer to the front
+    pikachu_eye_right.set_material(ambient=np.array([0, 0, 0]),
+                                   diffuse=np.array([0, 0, 0]),
+                                   specular=np.array([1, 1, 1]),
+                                   shininess=100,
+                                   reflection=np.array([0.5, 0.5, 0.5]))
+    objects.append(pikachu_eye_right)
 
-    # ear2 = Pyramid([
-    #     [-0.6, 0.8, -1.5], [-0.9, 0.8, -1.5], [-0.75, 1.5, -2]  # Adjust coordinates as needed
-    # ])
-    # ear2.set_material([0, 0, 0], [0, 0, 0], [0, 0, 0], 10, 0.1)
-    # objects.append(ear2)
+    # Pikachu's Ears
+    # Left Ear
+    vertices_ear_left = np.array([
+        [-1.5, 3, -5],
+        [-1.9, 2.2, -5],
+        [-1.1, 2.2, -5],
+        [-1.5, 2.5, -4.7],
+        [-1.5, 2.5, -5.3]
+    ])
+    pikachu_ear_left = Pyramid(vertices_ear_left)
+    pikachu_ear_left.set_material([0, 0, 0], [0, 0, 0], [0.3, 0.3, 0.3], 50, 0.5)
+    pikachu_ear_left.apply_materials_to_triangles()
+    objects.append(pikachu_ear_left)
+
+    # Pikachu's Right Ear as a Pyramid
+    vertices_ear_right = np.array([
+        [1.5, 3, -5],
+        [1.9, 2.2, -5],
+        [1.1, 2.2, -5],
+        [1.5, 2.5, -4.7],
+        [1.5, 2.5, -5.3]
+    ])
+    pikachu_ear_right = Pyramid(vertices_ear_right)
+    pikachu_ear_right.set_material([0, 0, 0], [0, 0, 0], [0.3, 0.3, 0.3], 50, 0.5)
+    pikachu_ear_right.apply_materials_to_triangles()
+    objects.append(pikachu_ear_right)
 
     # Pokeball
-    # Bottom half
-    bottom_half = Sphere([2, 0, -1], 0.5)
-    bottom_half.set_material([1, 1, 1], [1, 1, 1], [1, 1, 1], 100, 0.2)
-    objects.append(bottom_half)
+    pokeball_bottom = Sphere(center=[3, -1, -3], radius=0.5)
+    pokeball_bottom.set_material(ambient=np.array([1, 1, 1]),
+                                 diffuse=np.array([1, 1, 1]),
+                                 specular=np.array([1, 1, 1]),
+                                 shininess=300,
+                                 reflection=np.array([0.5, 0.5, 0.5]))
+    objects.append(pokeball_bottom)
 
-    # Top half
-    top_half = Sphere([2, 0, -0.5], 0.5)
-    top_half.set_material([1, 0, 0], [1, 0, 0], [1, 0, 0], 100, 0.2)
-    objects.append(top_half)
-
-    # Center button
-    center_button = Sphere([2, 0, -0.75], 0.1)
-    center_button.set_material([1, 1, 1], [1, 1, 1], [1, 1, 1], 100, 0.5)
-    objects.append(center_button)
-
+    pokeball_top = Sphere(center=[3, -0.5, -3], radius=0.5)
+    pokeball_top.set_material(ambient=np.array([1, 0, 0]),
+                              diffuse=np.array([1, 0, 0]),
+                              specular=np.array([1, 0, 0]),
+                              shininess=300,
+                              reflection=np.array([0.5, 0.5, 0.5]))
+    objects.append(pokeball_top)
     # Ground plane
-    plane = Plane([0, 1, 0], [0, -1, 0])
-    plane.set_material([0.2, 0.2, 0.2], [0.2, 0.2, 0.2], [1, 1, 1], 1000, 0.5)
+    plane = Plane(normal=[0, 1, 0], point=[0, -2.5, 0])
+    plane.set_material(ambient=np.array([1, 1, 1]),  # White ambient
+                       diffuse=np.array([1, 1, 1]),  # White diffuse
+                       specular=np.array([0.5, 0.5, 0.5]),  # Mild specular to avoid too much shine
+                       shininess=10,  # Lower shininess for a less glossy surface
+                       reflection=np.array([0.1, 0.1, 0.1]))
     objects.append(plane)
 
-    # Lights
-    # Directional light simulating sunlight
-    light1 = DirectionalLight([1, 1, 1], direction=[-1, -0.5, -0.5])
-    lights.append(light1)
+    # Background plane - setting this to white
+    background = Plane(normal=[0, 0, 1], point=[0, 0, -30])
+    background.set_material(ambient=np.array([1, 1, 1]),  # White ambient
+                            diffuse=np.array([1, 1, 1]),  # White diffuse
+                            specular=np.array([0.5, 0.5, 0.5]),  # Mild specular
+                            shininess=20,  # Moderate shininess to reflect some light
+                            reflection=np.array([0.1, 0.1, 0.1]))
+    objects.append(background)
 
-    # Ambient light for softer shadows
-    light2 = PointLight([0.5, 0.5, 0.5], position=[2, 2, 0], kc=0.1, kl=0.1, kq=0.01)
-    lights.append(light2)
+    # Lighting setup
+    directional_light = DirectionalLight(intensity=np.array([1.0, 1.0, 1.0]), direction=[1, -1, -1])
+    point_light = PointLight(intensity=np.array([0.8, 0.8, 0.8]), position=[2, 2, -3], kc=1, kl=0.1, kq=0.01)
+    lights.append(directional_light)
+    lights.append(point_light)
 
-    camera = np.array([0,0,1])
 
-    return camera, lights, objects 
+
+    # Camera setup
+    camera = np.array([0, 0, 1])
+
+    return camera, lights, objects
+

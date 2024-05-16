@@ -141,15 +141,16 @@ class Plane(Object3D):
 
     def intersect(self, ray: Ray):
         denominator = np.dot(self.normal, ray.direction)
-        if abs(denominator) < 1e-6: 
-            return None 
 
-        v = self.point - ray.origin
-        t = np.dot(v, self.normal) / denominator
-        if t > 0:
-            return t, self
-        else:
-            return None
+        if abs(denominator) > 1e-6:
+            v = self.point - ray.origin
+
+            t = np.dot(v, self.normal) / denominator
+
+            if t > 0:
+                return t, self
+
+        return None
 
 
 class Triangle(Object3D):
@@ -160,9 +161,10 @@ class Triangle(Object3D):
     A /____\ B
 
     The fornt face of the triangle is A -> B -> C.
-    
+
     """
     def __init__(self, a, b, c):
+        super().__init__()
         self.a = np.array(a)
         self.b = np.array(b)
         self.c = np.array(c)
